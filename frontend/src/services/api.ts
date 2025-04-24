@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
   withCredentials: true,
 });
 
@@ -31,9 +31,11 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post('http://localhost:8000/api/auth/token/refresh/', {
-          refresh: refreshToken,
-        });
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/auth/token/refresh/`,
+          { refresh: refreshToken },
+          { withCredentials: true }
+        );
 
         const newAccessToken = response.data.access;
         localStorage.setItem('access_token', newAccessToken);
@@ -43,9 +45,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         console.error('Token refresh failed:', err);
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
+        localStorage.clear(); // Clear all auth-related info
         window.location.href = '/login';
         return Promise.reject(err);
       }
