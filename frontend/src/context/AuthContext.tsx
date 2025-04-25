@@ -30,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const clearAuthData = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
@@ -48,12 +49,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
-      setUser(response.data.user);
+      setUser({
+        ...response.data.user,
+        department_id:
+          response.data.user.department_id ?? response.data.user.department?.id,
+      });
       return true;
     } catch (error) {
       console.error('Login failed:', error);
       toast.error('Login failed: Invalid credentials');
-      return false;  // Don't automatically log out on login failure
+      return false;
     }
   };
 
@@ -77,47 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     loadUser();
-  }, []);
-
-  // Interceptor setup - moved outside of component render loop
-  useEffect(() => {
-    const interceptor = api.interceptors.response.use(
-      response => response,
-      async error => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          try {
-            const refreshToken = localStorage.getItem('refresh_token');
-            if (refreshToken) {
-              const response = await api.post('/auth/token/refresh/', { refresh: refreshToken });
-
-              localStorage.setItem('access_token', response.data.access);
-              api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-
-              // Optionally, re-fetch user data after refreshing the token
-              const userResponse = await api.get('/auth/me/');
-              setUser({
-                ...userResponse.data,
-                department_id: userResponse.data.department_id ?? userResponse.data.department?.id,
-              });
-
-              return api(originalRequest);
-            }
-          } catch (err) {
-            console.error('Refresh token failed:', err);
-            logout();
-            toast.error('Session expired. Please log in again.');
-            return Promise.reject(err);
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
-
-    return () => api.interceptors.response.eject(interceptor);
   }, []);
 
   return (
