@@ -122,12 +122,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://nasrdavms.netlify.app",
-    "http://localhost:5173/"
+    "https://nasrdavms.netlify.app"
 ]
 
 # Add this too:
 CORS_ALLOWED_ORIGINS = [
-    "https://nasrdavms.netlify.app",
-    "http://localhost:5173/"
+    "https://nasrdavms.netlify.app"
 ]
