@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://vms.onrender.com/api',
+  baseURL: 'https://vms-z5iz.onrender.com/api',
   withCredentials: true,
 });
 
@@ -31,7 +31,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post('https://vms.onrender.com/api/auth/token/refresh/', 
+        const response = await axios.post('https://vms-z5iz.onrender.com/api/auth/token/refresh/', 
           {refresh: refreshToken},
           { withCredentials: true }
         );
