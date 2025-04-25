@@ -118,5 +118,16 @@ SIMPLE_JWT = {
 }
 
 # CORS configuration
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://nasrdavms.netlify.app",
+    "http://localhost:5173/"
+]
+
+# Add this too:
+CORS_ALLOWED_ORIGINS = [
+    "https://nasrdavms.netlify.app",
+    "http://localhost:5173/"
+]
