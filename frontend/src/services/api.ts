@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: 'https://vms-backend.onrender.com/api',
   withCredentials: true,
 });
 
@@ -31,9 +31,8 @@ api.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/auth/token/refresh/`,
-          { refresh: refreshToken },
+        const response = await axios.post('https://vms-backend.onrender.com/api/auth/token/refresh/', 
+          {refresh: refreshToken},
           { withCredentials: true }
         );
 
@@ -45,7 +44,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         console.error('Token refresh failed:', err);
-        localStorage.clear(); // Clear all auth-related info
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
         window.location.href = '/login';
         return Promise.reject(err);
       }
